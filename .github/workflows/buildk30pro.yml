@@ -1,0 +1,54 @@
+name: Kernel Build
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Toolchain
+        run: |
+          sudo apt-get install -y bc build-essential libssl-dev libelf-dev
+          wget https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/master/clang-r450784e.tar.gz
+          mkdir clang && tar -xzf clang-r450784e.tar.gz -C clang
+
+      - name: Configure Environment
+        env:
+          ARCH: arm64
+          CLANG_PATH: ${{ github.workspace }}/clang/bin
+          CROSS_COMPILE: aarch64-linux-gnu-
+          KERNEL_SRC: ${{ github.workspace }}
+        run: |
+          export PATH=$CLANG_PATH:$PATH
+          make O=out vendor/lmi_defconfig
+
+      - name: Compile Kernel
+        run: |
+          make -j$(nproc --all) O=out \
+            CC=clang \
+            CLANG_TRIPLE=aarch64-linux-gnu- \
+            CROSS_COMPILE=aarch64-linux-gnu- \
+            LLVM=1
+
+      - name: Package ZIP
+        run: |
+          git clone https://github.com/osm0sis/AnyKernel3
+          cp out/arch/arm64/boot/Image.gz-dtb AnyKernel3/
+          cd AnyKernel3
+          sed -i 's/device_name=.*/device_name="lmi"/' anykernel.sh
+          zip -r9 kernel.zip *
+          mv kernel.zip ../
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: kernel-lmi
+          path: kernel.zip
