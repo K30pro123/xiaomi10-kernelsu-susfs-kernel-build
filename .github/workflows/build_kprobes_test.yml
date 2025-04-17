@@ -11,6 +11,8 @@ on:
         options:
           - 小米10
           - 小米10Pro
+          - 小米k30pro
+          - pocof2 
       susfs:
         description: '是否集成susfs'
         required: true
