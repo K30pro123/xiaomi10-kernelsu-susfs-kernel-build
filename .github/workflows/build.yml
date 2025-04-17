@@ -11,6 +11,7 @@ on:
         options:
           - umi
           - cmi
+          - lmi
       susfs:
         description: '是否集成SUSFS：'
         required: true
