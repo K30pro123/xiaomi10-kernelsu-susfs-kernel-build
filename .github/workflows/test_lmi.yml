@@ -6,10 +6,10 @@ on:
       phone:
         description: '选择手机型号：'
         required: true
-        default: 'umi'
+        default: 'lmi'
         type: choice
         options:
-          - umi
+         
           - lmi
       susfs:
         description: '是否集成SUSFS：'
@@ -96,9 +96,9 @@ jobs:
             echo "输入为空"
           fi
 
-          if [ ${{ inputs.phone }} = 'umi' ]; then
-            echo "选择小米10配置"
-            DEFCONFIG=vendor/umi_defconfig
+          if [ ${{ inputs.phone }} = 'lmi' ]; then
+            echo "选择小米k30pro配置"
+            DEFCONFIG=vendor/lmi_defconfig
           elif [ ${{ inputs.phone }} = 'lmi' ]; then
             echo "选择红米k30pro配置"
             DEFCONFIG=vendor/lmi_user_defconfig
