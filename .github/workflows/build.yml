@@ -6,7 +6,7 @@ on:
       phone:
         description: '选择手机型号：'
         required: true
-        default: 'umi'
+        default: 'lmi'
         type: choice
         options:
         
